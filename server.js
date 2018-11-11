@@ -1,7 +1,9 @@
 const express = require("express"),
   app = express(),
   bodyparser = require("body-parser");
-
+  const mongoose = require('mongoose');
+  mongoose.connect('mongodb://talha:talhakhan1@ds151523.mlab.com:51523/hydroponics');
+  
 app.set("port", process.env.PORT || 8080);
 app.use(express.static(__dirname + "/"));
 
@@ -17,6 +19,14 @@ function serveStaticFile(res, path, contentType, responseCode) {
     }
   });
 }
+
+app.get('/', function(req,res){
+  db.talha.insertOne({
+    name:"talha",
+    age:69
+  })
+  res.end();
+})
 
 app.use(function(req, res) {
   res.type("text/plain");

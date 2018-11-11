@@ -1,0 +1,5 @@
+systemLog:
+    destination: file
+    path: c:\users\b00058197\desktop\hydroponics\log\mongod.log
+storage:
+    dbPath: c:\users\b00058197\desktop\hydroponics\db
