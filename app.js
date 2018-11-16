@@ -89,6 +89,11 @@ app.post("/login_user", urlencodedParser, function(req, res) {
 //   // res.send(newUser);
 // });
 
+app.post("/store_data", urlencodedParser, function(req, res) {
+
+  
+});
+
 app.use(function(req, res) {
   res.type("text/plain");
   res.status(404);
