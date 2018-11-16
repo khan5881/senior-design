@@ -4,10 +4,18 @@ var Schema = mongoose.Schema; // schema initilization
 
 var UserSchema = new Schema({
   // UserSchema stores the email (also username), firstname, lastname and passwordHash
-  email: String,
-  firstName: String,
-  lastName: String,
-  passwordHash: { type: String }
+  email: {
+    type: String,
+    required: "Please enter an Email address",
+    trim: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "Please fill in a valid email address"
+    ]
+  },
+  firstName: { type: String, required: true, trim: true },
+  lastName: { type: String, required: true, trim: true },
+  passwordHash: { type: String, required: true, minlength: 6, maxlength: 12 }
 });
 
 module.exports = mongoose.model("User", UserSchema);
