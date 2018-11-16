@@ -1,10 +1,13 @@
-const express = require("express"),
+const express = require("express"), // calling express, bcrypt, app,fs,mongoose
   bodyParser = require("body-parser"),
+  bcrypt = require("bcrypt"),
   app = express(),
   fs = require("fs"),
   mongoose = require("mongoose"),
   user = require("./models/usermodel"), // importing the user schema
-  sensor = require("./models/sensormodel"); // importing the sensor schema
+  sensor = require("./models/sensormodel"); // importing the sensor schema.
+
+var saltRounds = 10;
 
 mongoose.connect(
   "mongodb://talha:talhakhan1@ds259463.mlab.com:59463/hydroponics",
@@ -29,41 +32,43 @@ function serveStaticFile(res, path, contentType, responseCode) {
 }
 
 app.post("/register_user", urlencodedParser, function(req, res) {
-  var newUser = user; // storing exported stuff here
-
+  var newUser = user;
+  var hash = bcrypt.hashSync(req.body.password, saltRounds);
   var register = new newUser({
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    passwordHash: req.body.password
+    passwordHash: hash
   })
     .save()
     .then(
       () => {
-        console.log("successfully inserted!");
+        res.send("User Successfully registered!");
       },
       e => {
-        console.log("Error! ", e);
+        console.log(e);
+        res.send("Error! Duplicate value");
       }
     );
-  res.send(register);
 });
 
 app.post("/login_user", urlencodedParser, function(req, res) {
   var newUser = user;
-  newUser
-    .find({ email: req.body.email }, function(err, docs) {
-      console.log(docs);
-      if (docs[0].passwordHash == req.body.password) {
+  newUser.find({ email: req.body.email }, function(err, docs) {
+    if (err) {
+      // error handling from database side
+      res.send(err);
+    } else if (docs.length) {
+      // in the event that we have recieved a document
+      if (bcrypt.compareSync(req.body.password, docs[0].passwordHash)) {
         res.send("Success");
       } else {
         res.send("Fail");
       }
-    })
-    .catch(err => {
-      console.log(err);
-      res.send("Fail", e);
-    });
+    } else {
+      res.send("UserNotFound");
+    }
+  });
 });
 
 // let query = newUser.find({ email: req.body.email });

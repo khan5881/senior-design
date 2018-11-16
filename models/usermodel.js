@@ -11,11 +11,13 @@ var UserSchema = new Schema({
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please fill in a valid email address"
-    ]
+    ],
+    index: true,
+    unique: true
   },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
-  passwordHash: { type: String, required: true, minlength: 6, maxlength: 12 }
+  passwordHash: { type: String, required: true }
 });
 
 module.exports = mongoose.model("User", UserSchema);
