@@ -51,7 +51,7 @@ app.post("/register_user", urlencodedParser, function(req, res) {
       }
     );
 });
-//
+
 app.post("/login_user", urlencodedParser, function(req, res) {
   var newUser = user;
   newUser.find({ email: req.body.email }, function(err, docs) {
