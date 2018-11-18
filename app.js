@@ -31,14 +31,15 @@ function serveStaticFile(res, path, contentType, responseCode) {
   });
 }
 
-app.post("/register_user", urlencodedParser, function(req, res) {
+app.post("/register_user", urlencodedParser, function(req, res, id) {
   var newUser = user;
   var hash = bcrypt.hashSync(req.body.password, saltRounds);
   var register = new newUser({
     email: req.body.email,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    passwordHash: hash
+    passwordHash: hash,
+    espid: [req.body.espid1, req.body.espid2]
   })
     .save()
     .then(
@@ -71,6 +72,17 @@ app.post("/login_user", urlencodedParser, function(req, res) {
   });
 });
 
+app.post("/test", urlencodedParser, function(req, res) {
+  // intialize a model, store values in it
+  // connect it to the user id
+  // store new db in thingy
+
+  var x = sensor;
+  var y = new x({
+    userinformation: newUser._id
+  });
+});
+
 // let query = newUser.find({ email: req.body.email });
 //   query
 //     .exec()
@@ -88,11 +100,6 @@ app.post("/login_user", urlencodedParser, function(req, res) {
 
 //   // res.send(newUser);
 // });
-
-app.post("/store_data", urlencodedParser, function(req, res) {
-
-  
-});
 
 app.use(function(req, res) {
   res.type("text/plain");
