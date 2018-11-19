@@ -31,7 +31,7 @@ function serveStaticFile(res, path, contentType, responseCode) {
   });
 }
 
-app.post("/register_user", urlencodedParser, function(req, res, id) {
+app.post("/register_user", urlencodedParser, function(req, res) {
   var newUser = user;
   var hash = bcrypt.hashSync(req.body.password, saltRounds);
   var register = new newUser({

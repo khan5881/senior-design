@@ -4,7 +4,7 @@ var Schema = mongoose.Schema; // schema initilization
 var ObjectId = mongoose.Schema.Types.ObjectId; // referencing a schema
 
 var espdata = new Schema({
-  // stores the esp32 data
+  espid:{ type: String, required: true },
   hygrometer: { type: Number, default: 0 },
   waterlevel: { type: Number, default: 0 },
   pH: { type: Number, default: 0.0 }
