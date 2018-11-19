@@ -1,18 +1,10 @@
-const express = require("express"), // calling express, bcrypt, app,fs,mongoose
-  bodyParser = require("body-parser"),
   bcrypt = require("bcrypt"),
-  app = express(),
   fs = require("fs"),
-  mongoose = require("mongoose"),
   user = require("./models/usermodel"), // importing the user schema
-  sensor = require("./models/sensormodel"); // importing the sensor schema.
+  sensor = require("./models/sensormodel"), // importing the sensor schema.
+  db = require('./db');
 
 var saltRounds = 10;
-
-mongoose.connect(
-  "mongodb://talha:talhakhan1@ds259463.mlab.com:59463/hydroponics",
-  { useNewUrlParser: true }
-); // connecting to cloud mongoDB
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false }); // body
 app.set("port", process.env.PORT || 3000);
@@ -101,22 +93,4 @@ app.post("/test", urlencodedParser, function(req, res) {
 //   // res.send(newUser);
 // });
 
-app.use(function(req, res) {
-  res.type("text/plain");
-  res.status(404);
-  res.send("404 - Not Found");
-});
 
-app.use(function(err, req, res, next) {
-  console.error(err.stack);
-  res.type("text/plain");
-  res.status(500);
-  res.send("500 - Server Error");
-});
-app.listen(app.get("port"), function() {
-  console.log(
-    "Express started on http://localhost:" +
-      app.get("port") +
-      "; press Ctrl-C to terminate."
-  );
-});
