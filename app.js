@@ -1,32 +1,12 @@
-var express = require('express');
+var express = require("express");
 var app = express();
-var db = require('./db');
-
-// (bcrypt = require("bcrypt")),
-//   (fs = require("fs")),
-//   (sensor = require("./models/sensormodel")); // importing the sensor schema.
-
-//var saltRounds = 10;
-
-// var urlencodedParser = bodyParser.urlencoded({ extended: false }); // body
-// app.set("port", process.env.PORT || 3000);
-// app.use(express.static(__dirname));
-
-// function serveStaticFile(res, path, contentType, responseCode) {
-//   if (!responseCode) responseCode = 200;
-//   fs.readFile(__dirname + "/", function(err, data) {
-//     if (err) {
-//       res.writeHead(500, { "Content-Tye": "text/plain" });
-//       res.end("500 - Internal Error");
-//     } else {
-//       res.writeHead(responseCode, { "Content-Type": contentType });
-//       res.end(data);
-//     }
-//   });
-// }
+var db = require("./db");
 
 var UserController = require("./user/usercontroller");
 app.use("/users", UserController);
+
+var AuthController = require("./auth/authcontroller");
+app.use("/api/auth", AuthController);
 
 // app.post("/login_user", urlencodedParser, function(req, res) {
 //   var newUser = user;
@@ -75,6 +55,5 @@ app.use("/users", UserController);
 
 //   // res.send(newUser);
 // });
-
 
 module.exports = app;
