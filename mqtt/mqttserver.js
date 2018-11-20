@@ -1,7 +1,6 @@
 const mqtt = require("mqtt"),
   mongoose = require("mongoose"),
-  sensor = require("./models/sensormodel"); // importing the sensor schema.
-  //user = require("./models/usermodel");
+  sensor = require("../sensor/sensormodel"); // importing the sensor schema.
 
 const client = mqtt.connect("mqtt://broker.mqttdashboard.com");
 mongoose.connect(
@@ -21,18 +20,20 @@ client.on("message", (topic, message) => {
 
   let data = JSON.parse(message.toString());
 
-  // let toSave = new sensor({
-  //   espid: topic.split("/")[1],
-  //   hygrometer: data.hygrometer,
-  //   waterlevel: data.waterlevel
-  // });
-
-  // toSave.save().then(
-  //   () => {
-  //     console.log("data stored successfully for " + topic.split("/")[1]);
-  //   },
-  //   () => {
-  //     console.log("Error! data did not save");
-  //   }
-  // );
+  let toSave = new sensor({
+    espid: topic.split("/")[1],
+    hygrometer: data.hygrometer,
+    waterlevel: data.waterlevel,
+    pH: data.ph,
+    timestamp: Date.now()
+  })
+    .save()
+    .then(
+      () => {
+        console.log("data stored successfully for " + topic.split("/")[1]);
+      },
+      () => {
+        console.log("Error! data did not save");
+      }
+    );
 });

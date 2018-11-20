@@ -16,7 +16,7 @@ var UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
   passwordHash: { type: String, required: true },
-  //espid: [{ type: String, unique: true, default: 0, required: true }]
+  espid: [{ type: Number, unique: true, default: 0, required: true }]
 });
 
 module.exports = mongoose.model("User", UserSchema);
