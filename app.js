@@ -1,79 +1,62 @@
-  bcrypt = require("bcrypt"),
-  fs = require("fs"),
-  user = require("./models/usermodel"), // importing the user schema
-  sensor = require("./models/sensormodel"), // importing the sensor schema.
-  db = require('./db');
+var express = require('express');
+var app = express();
+var db = require('./db');
 
-var saltRounds = 10;
+// (bcrypt = require("bcrypt")),
+//   (fs = require("fs")),
+//   (sensor = require("./models/sensormodel")); // importing the sensor schema.
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false }); // body
-app.set("port", process.env.PORT || 3000);
-app.use(express.static(__dirname));
+//var saltRounds = 10;
 
-function serveStaticFile(res, path, contentType, responseCode) {
-  if (!responseCode) responseCode = 200;
-  fs.readFile(__dirname + "/", function(err, data) {
-    if (err) {
-      res.writeHead(500, { "Content-Tye": "text/plain" });
-      res.end("500 - Internal Error");
-    } else {
-      res.writeHead(responseCode, { "Content-Type": contentType });
-      res.end(data);
-    }
-  });
-}
+// var urlencodedParser = bodyParser.urlencoded({ extended: false }); // body
+// app.set("port", process.env.PORT || 3000);
+// app.use(express.static(__dirname));
 
-app.post("/register_user", urlencodedParser, function(req, res) {
-  var newUser = user;
-  var hash = bcrypt.hashSync(req.body.password, saltRounds);
-  var register = new newUser({
-    email: req.body.email,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    passwordHash: hash,
-    espid: [req.body.espid1, req.body.espid2]
-  })
-    .save()
-    .then(
-      () => {
-        res.send("User Successfully registered!");
-      },
-      e => {
-        console.log(e);
-        res.send("Error! Duplicate value");
-      }
-    );
-});
+// function serveStaticFile(res, path, contentType, responseCode) {
+//   if (!responseCode) responseCode = 200;
+//   fs.readFile(__dirname + "/", function(err, data) {
+//     if (err) {
+//       res.writeHead(500, { "Content-Tye": "text/plain" });
+//       res.end("500 - Internal Error");
+//     } else {
+//       res.writeHead(responseCode, { "Content-Type": contentType });
+//       res.end(data);
+//     }
+//   });
+// }
 
-app.post("/login_user", urlencodedParser, function(req, res) {
-  var newUser = user;
-  newUser.find({ email: req.body.email }, function(err, docs) {
-    if (err) {
-      // error handling from database side
-      res.send(err);
-    } else if (docs.length) {
-      // in the event that we have recieved a document
-      if (bcrypt.compareSync(req.body.password, docs[0].passwordHash)) {
-        res.send("Success");
-      } else {
-        res.send("Fail");
-      }
-    } else {
-      res.send("UserNotFound");
-    }
-  });
-});
+var UserController = require("./user/usercontroller");
+app.use("/users", UserController);
 
-app.post("/test", urlencodedParser, function(req, res) {
-  // intialize a model, store values in it
-  // connect it to the user id
-  // store new db in thingy
+// app.post("/login_user", urlencodedParser, function(req, res) {
+//   var newUser = user;
+//   newUser.find({ email: req.body.email }, function(err, docs) {
+//     if (err) {
+//       // error handling from database side
+//       res.send(err);
+//     } else if (docs.length) {
+//       // in the event that we have recieved a document
+//       if (bcrypt.compareSync(req.body.password, docs[0].passwordHash)) {
+//         res.send("Success");
+//       } else {
+//         res.send("Fail");
+//       }
+//     } else {
+//       res.send("UserNotFound");
+//     }
+//   });
+// });
 
-  var x = sensor;
-  var y = new x({
-    userinformation: newUser._id
-  });
-});
+// app.post("/test", urlencodedParser, function(req, res) {
+// intialize a model, store values in it
+// connect it to the user id
+// store new db in thingy
+
+//   var x = sensor;
+//   var y = new x({
+//     userinformation: newUser._id
+//   });
+// });
 
 // let query = newUser.find({ email: req.body.email });
 //   query
@@ -94,3 +77,4 @@ app.post("/test", urlencodedParser, function(req, res) {
 // });
 
 
+module.exports = app;
