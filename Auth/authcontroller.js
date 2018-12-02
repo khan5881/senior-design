@@ -48,7 +48,7 @@ router.post("/login", function(req, res) {
       expiresIn: 86400 // expires in 24 hours
     });
     // return the information including token as JSON
-    res.status(200).send({ auth: true, token: token });
+    res.status(200).send({ auth: true, token: token, user });
   });
 });
 
