@@ -9,7 +9,7 @@ mongoose.connect(
 );
 
 client.on("connect", function() {
-  client.subscribe("hydroponics/#");
+  client.subscribe("esp32/#");
   console.log("client has subscribed successfully");
 });
 
@@ -18,13 +18,20 @@ client.on("message", (topic, message) => {
   console.log(JSON.parse(message.toString())); // this is the message that we want to store
   console.log(topic.split("/")[1]); // this is where we split the topic from
 
+
   let data = JSON.parse(message.toString());
 
   let toSave = new sensor({
     espid: topic.split("/")[1],
-    hygrometer: data.hygrometer,
+    hygrometer: [
+      data["hygrometer"]["hygro1"],
+      data["hygrometer"]["hygro2"],
+      data["hygrometer"]["hygro3"],
+      data["hygrometer"]["hygro4"]
+    ],
     waterlevel: data.waterlevel,
-    pH: data.ph,
+    pH: data.pH,
+    humidity: data.humidity,
     timestamp: Date.now()
   })
     .save()
