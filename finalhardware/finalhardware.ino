@@ -5,19 +5,23 @@
 #include <DHTesp.h> // used for humidity sensor
 #include <WiFi.h> // used to connect to the wifi
 #include <PubSubClient.h> // used to connect to hivemq for mqtt
+#include <Adafruit_NeoPixel.h>
 HardwareSerial myserial(2); // using U2_TXD
 DHTesp dht;
+
 
 // DEFINITION OF ALL GPIO PINS STARTS HERE...............
 #define rx 17  // RX and TX
 #define tx 16
 #define w8r_lvl 34 // water level pin
+#define PIN 33 // LED PIN
+
 
 const int relay = 21; // GPIO for relay
 const int moist1 = 36; // GPIO for the 4 moisture sensors
-const int moist2 = 37;
-const int moist3 = 38;
-const int moist4 = 39;
+const int moist2 = 21;
+const int moist3 = 12;
+const int moist4 = 15;
 // DEFINITION OF ALL GPIO PINS ENDS HERE.................
 
 // ALL VARIABLES SETUP STARTS HERE.........................
@@ -38,11 +42,14 @@ int timetotal;
 // SETTING UP THE WIFI/ MQTT
 const char* ssid = "pollution"; // ssid username
 const char* password =  "aus12345"; // router password
+
 const uint16_t port = 3005;
 const char * host = "192.168.1.129";// IP address of server (change this to aus pc one)
 const char* mqtt_server = "broker.mqttdashboard.com"; // MQTT server
 WiFiClient espClient; //creating wifi client
 PubSubClient client(espClient); // partially initializing MQTT client
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(1, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
@@ -53,6 +60,8 @@ void setup() {
   dht.setup(32, DHTesp::DHT22);
   setup_wifi(); // function that connects the esp32 to the wifi
   client.setServer(mqtt_server, 1883); // setting up a server
+  pixels.begin(); // This initializes the NeoPixel library.
+
 }
 
 void loop()
@@ -107,7 +116,7 @@ void loop()
     // WATER LEVEL SENSOR START HERE................................
     reading = analogRead(w8r_lvl);  //read analog values from water sensor
     volt =  (3.30 * reading) / (4095.0); //convert to digital
-    percent = (2.63 - volt) / (2.63 - 1.95); // convert to percent
+    percent = (2.2 - volt) / (15.0); // convert to percent
     percent_full = (percent) * 100; // multiply by 100 to get it in percent
     waterlevel = (percent * 25.00); // convert to percent to cm
 
@@ -150,6 +159,7 @@ void loop()
       Serial.println("All sensors are measuring the correct values");
       client.publish("esp32/1234/hygrodata", JSONmessageBuffer); // this data is published to the MQTT broker
       ctr = 0;
+      pixels.setPixelColor(0, pixels.Color( 0, 255, 0)); // bright green color.
     }
     else {
       if (ctr == 0) {
@@ -187,14 +197,23 @@ void loop()
           }
         }
         timetotal = millis() + time_wait;
+        pixels.setPixelColor(0, pixels.Color( 0, 0, 255)); // bright blue color.
+        pixels.show(); // This sends the updated pixel color to the hardware.
+
+
       }
       else {
         if (millis() >= timetotal) {
           ctr = 2;
           client.publish("esp32/1234/alert",  "Alert! One or more sensors are not working");
         }
+        pixels.setPixelColor(0, pixels.Color( 255, 0, 0)); // bright red color.
+        pixels.show(); // This sends the updated pixel color to the hardware.
+
       }
     }
+    delay(2000);
+
   }
 }
 
